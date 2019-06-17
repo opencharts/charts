@@ -1,0 +1,22 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc"
+    xmlns:control="fokin.chart.control"
+    xmlns="sap.m">
+    <control:Chart
+        axisBottomTicks="{candles>/}"
+        padding="60"
+        width="1000"
+        height="500"
+        min="0"
+        max="5"> 
+        <control:series>
+            <control:LineSeries points="{candles>/}">
+                <control:points>
+                    <control:Point x="{candles>time}" y="{candles>close}"/>
+                </control:points>
+            </control:LineSeries>
+        </control:series>
+        <control:axisBottomTicks>
+            <control:AxisTick value="{candles>time}"/>
+        </control:axisBottomTicks>
+    </control:Chart>
+</mvc:View>

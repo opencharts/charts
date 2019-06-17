@@ -1,0 +1,66 @@
+{
+    "sap.app": {
+        "id": "fokin.chart",
+        "type": "application",
+        "applicationVersion": {
+            "version": "1.0.0"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5"
+    },
+    "sap.ui5": {
+        "autoPrefixId": true,
+        "models": {
+            "": {
+                "uri": "./data/data.json",
+                "type": "sap.ui.model.json.JSONModel"
+            },
+            "candles": {
+                "uri": "./data/candles.json",
+                "type": "sap.ui.model.json.JSONModel"
+            }
+        },
+        "rootView": {
+			"viewName": "fokin.chart.view.App",
+			"type": "XML"
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "fokin.chart.view",
+				"controlId": "app",
+				"controlAggregation": "pages"
+			},
+			"routes": [
+				{
+					"pattern": "bar",
+					"name": "bar",
+					"target": "bar"
+				},
+				{
+					"pattern": "",
+					"name": "candlestick",
+					"target": "candlestick"
+				},
+				{
+					"pattern": "line",
+					"name": "line",
+					"target": "line"
+				}
+			],
+			"targets": {
+				"bar": {
+					"viewName": "Bar"
+				},
+				"candlestick": {
+					"viewName": "Candlestick"
+				},
+				"line": {
+					"viewName": "Line"
+				}
+			}
+		}
+    }
+}
