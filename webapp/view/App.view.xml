@@ -1,4 +1,50 @@
 <mvc:View xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <App id="app"/>
+    xmlns="sap.m"
+    xmlns:control="fokin.chart.control"
+    xmlns:indicator="fokin.chart.control.indicator">
+    <VBox>
+        <control:CandlestickChart
+            candles="{/}"
+            padding="30"
+            
+            height="240">
+            <control:candles>
+                <control:Candle x="{time}"
+                    open="{open}"
+                    high="{high}"
+                    low="{low}"
+                    close="{close}"
+                    buy="{= ${advice} === 1}"
+                    sell="{= ${advice} === -1}"/>
+            </control:candles>
+        </control:CandlestickChart>
+        <indicator:CCI0
+            points="{/}"
+            padding="30"
+            threshold="100"
+            
+            height="120">
+            <indicator:points>
+                <control:Point x="{time}" y="{cci}"/>
+            </indicator:points>
+        </indicator:CCI0>
+    </VBox>
+    <control:BarChart
+        bars="{/}"
+        padding="30"
+        width="320"
+        height="240">
+        <control:bars>
+            <control:Bar x="{time}" y="{close}"/>
+        </control:bars>
+    </control:BarChart>
+    <control:LineChart
+        points="{/}"
+        padding="30"
+        width="480"
+        height="240">
+        <control:points>
+            <control:Point x="{time}" y="{cci}"/>
+        </control:points>
+    </control:LineChart>
 </mvc:View>

@@ -3,7 +3,7 @@ sap.ui.define([
 ], function(Control) {
     "use strict";
 
-    return Control.extend("fokin.chart.control.Candlestick", {
+    return Control.extend("fokin.chart.control.Candle", {
         metadata: {
             properties: {
                 x: "any",
@@ -11,7 +11,13 @@ sap.ui.define([
                 high: "float",
                 low: "float",
                 close: "float",
+                buy: "boolean",
+                sell: "boolean"
             }
+        },
+
+        getTrend: function() {
+            return this.getClose() - this.getOpen();
         }
     });
 });
