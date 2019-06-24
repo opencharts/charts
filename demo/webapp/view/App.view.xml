@@ -1,0 +1,29 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" 
+  xmlns="sap.m" 
+  xmlns:fc="open.fc" 
+  xmlns:indicator="open.fc.indicator">
+  <VBox>
+    <fc:CandlestickChart candles="{/}" 
+      padding="30" 
+      height="240">
+      <fc:candles>
+        <fc:Candle x="{time}" 
+          open="{open}" 
+          high="{high}" 
+          low="{low}" 
+          close="{close}" 
+          buy="{= ${advice} === 1}" 
+          sell="{= ${advice} === -1}"/>
+      </fc:candles>
+    </fc:CandlestickChart>
+    <indicator:CCI points="{/}" 
+      padding="30" 
+      threshold="100" 
+      height="120">
+      <indicator:points>
+        <fc:Point x="{time}" 
+          y="{cci}"/>
+      </indicator:points>
+    </indicator:CCI>
+  </VBox>
+</mvc:View>
