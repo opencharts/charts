@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "ui5 serve",
     "build": "ui5 build"
   }
 }

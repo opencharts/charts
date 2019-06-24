@@ -9,7 +9,7 @@ sap.ui.define(["sap/ui/core/library"], function() {
       "openu.fc.CandlestickChart",
       "openu.fc.Candle",
       "openu.fc.Point",
-      "openu.fc.indicator.CCI0"
+      "openu.fc.indicator.CCI"
     ],
     elements: [],
     noLibraryCSS: true,
