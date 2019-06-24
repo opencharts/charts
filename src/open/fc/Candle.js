@@ -12,10 +12,6 @@ sap.ui.define(["sap/ui/core/Control"], function(Control) {
         buy: "boolean",
         sell: "boolean"
       }
-    },
-
-    getTrend: function() {
-      return this.getClose() - this.getOpen();
     }
   });
 });

@@ -11,9 +11,7 @@
           open="{open}" 
           high="{high}" 
           low="{low}" 
-          close="{close}" 
-          buy="{= ${advice} === 1}" 
-          sell="{= ${advice} === -1}"/>
+          close="{close}"/>
       </fc:candles>
     </fc:CandlestickChart>
     <indicator:CCI points="{/}" 
