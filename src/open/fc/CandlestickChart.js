@@ -11,20 +11,34 @@ sap.ui.define(
 
     return Control.extend("open.fc.CandlestickChart", {
       metadata: {
+        library: "open.fc",
         properties: {
-          padding: "int",
-          width: "int",
-          height: "int"
+          width: "float",
+          height: "float",
+          axisLeftWidth: "float",
+          axisRightWidth: "float",
+          axisTopHeight: "float",
+          axisBottomHeight: "float"
         },
         aggregations: {
           candles: { type: "open.fc.Candle", multiple: true }
-        }
+        },
+
+        defaultAggregation: "candles"
       },
 
+      init: function() {
+        var oControl = this;
+        $(window).on("resize", function(oEvent) {
+          oControl.onAfterRendering();
+        });
+      },
       renderer: function(oRm, oControl) {
         oRm.write("<svg");
         oRm.writeControlData(oControl);
-        oRm.write("></svg>");
+        oRm.write(
+          "><g class='fcChart'><g class='fcAxisLeft'></g><g class='fcAxisBottom'></g><g class='fcPlotArea'></g></g></svg>"
+        );
         // d3 применяется только после рендера UI5
       },
 
@@ -37,35 +51,58 @@ sap.ui.define(
         ); //call superclass
       },
 
+      // если меняется размер, то менять только размеры
+      // если изменяется количество элементов - то их
       onAfterRendering: function() {
-        var aCandles = this.getCandles();
+        var oControl = this;
+        var aCandles = oControl.getCandles();
         if (!aCandles || aCandles.length < 2) return;
         var sId = this.getId();
 
         // подготовка переменных
-        var iPadding = this.getPadding();
         var sParentId = this.getParent().getId();
 
-        if (!this.getWidth()) this.setWidth($("#" + sParentId).width());
+        var fWidth = oControl.getWidth();
 
-        var iWidth = this.getWidth() - 2 * iPadding;
-        var iHeight = this.getHeight() - 2 * iPadding;
+        if (!fWidth) {
+          fWidth = $("#" + sParentId).width();
+        }
+
+        var fAxisLeftWidth = oControl.getAxisLeftWidth(); // должно быть дефолтное, или даже вычисляться автоматически
+        var fAxisRightWidth = oControl.getAxisRightWidth(); // должно быть дефолтное, или даже вычисляться автоматически
+        var fPlotAreaWidth = fWidth - fAxisLeftWidth - fAxisRightWidth;
+        var fHeight = oControl.getHeight();
+
+        if (!fHeight) {
+          fHeight = $("#" + sParentId).height(); // FIXME не срабатывает
+        }
+
+        var fAxisTopHeight = oControl.getAxisTopHeight(); // должно быть дефолтное, или даже вычисляться автоматически
+        var fAxisBottomHeight = oControl.getAxisBottomHeight(); // должно быть дефолтное, или даже вычисляться автоматически
+        var fPlotAreaHeight = fHeight - fAxisBottomHeight - fAxisTopHeight;
         var fMin = d3.min(aCandles, e => e.getLow());
         var fMax = d3.max(aCandles, e => e.getHigh());
+        var fCandleBodyWidth = 0.8; // TODO заменить на ось категорий
 
-        var fCandleBodyWidth = 0.8;
-        var sPositive = "green";
-        var sStroke = "red";
-
+        var sPositive = "white"; // TODO заменить на стили
+        var sStroke = "white"; // TODO заменить на стили
         // подготовка пространства
         var svg = d3
           .select("#" + sId)
-          .attr("width", this.getWidth())
-          .attr("height", this.getHeight());
 
-        var chart = svg
-          .append("g")
-          .attr("transform", `translate(${iPadding}, ${iPadding})`);
+          .attr("width", fWidth)
+          .attr("height", fHeight);
+
+        var chart = svg.select(".fcChart");
+
+        // console.log(ch1);
+        // var chart = svg
+        //   .append("g")
+
+        chart.attr(
+          "transform",
+          `translate(${fAxisLeftWidth}, ${fAxisTopHeight})`
+        ); // без учета верхней оси или заголовка
 
         // шкала x
         var dMinX = moment(aCandles[0].getX()).toDate();
@@ -76,15 +113,15 @@ sap.ui.define(
 
         var xScale = d3
           .scaleTime()
-          .range([0, iWidth])
+          .range([0, fPlotAreaWidth])
           .domain([dMinX, dMaxX]);
 
         // ось x
         var oAxisBottom = d3.axisBottom(xScale);
 
         chart
-          .append("g")
-          .attr("transform", `translate(0, ${iHeight})`)
+          .select(".fcAxisBottom")
+          .attr("transform", `translate(0, ${fPlotAreaHeight})`)
           .call(oAxisBottom);
 
         var fTickWidth = xScale(
@@ -96,36 +133,44 @@ sap.ui.define(
         // шкала y
         var yScale = d3
           .scaleLinear()
-          .range([iHeight, 0])
+          .range([fPlotAreaHeight, 0])
           .domain([fMin, fMax]);
 
         // ось y
-        chart.append("g").call(d3.axisLeft(yScale));
+        chart.select(".fcAxisLeft").call(d3.axisLeft(yScale));
 
         // тень свечи
-        chart
-          .selectAll()
-          .data(aCandles)
-          .enter()
-          .append("line")
-          .attr("x1", e => xScale(moment(e.getX()).toDate()) + fTickWidth / 2)
-          .attr("x2", e => xScale(moment(e.getX()).toDate()) + fTickWidth / 2)
-          .attr("y1", e => yScale(e.getHigh()))
-          .attr("y2", e => yScale(e.getLow()))
-          .attr("fill", e =>
-            e.getClose() >= e.getOpen() ? sPositive : sStroke
-          )
-          .attr("stroke-width", 1)
-          .attr("stroke", e =>
-            e.getClose() >= e.getOpen() ? sPositive : sStroke
-          );
+        var plotArea = chart.select(".fcPlotArea");
+
+        // plotArea
+        //   .selectAll()
+        //   .data(aCandles)
+        //   .enter()
+        //   .append("line")
+        //   .attr("x1", e => xScale(moment(e.getX()).toDate()) + fTickWidth / 2)
+        //   .attr("x2", e => xScale(moment(e.getX()).toDate()) + fTickWidth / 2)
+        //   .attr("y1", e => yScale(e.getHigh()))
+        //   .attr("y2", e => yScale(e.getLow()))
+        //   .attr("fill", e =>
+        //     e.getClose() >= e.getOpen() ? sPositive : sStroke
+        //   )
+        //   .attr("stroke-width", 1)
+        //   .attr("stroke", e =>
+        //     e.getClose() >= e.getOpen() ? sPositive : sStroke
+        //   );
 
         // тело свечи
-        chart
-          .selectAll()
-          .data(aCandles)
+        var candleBody = plotArea.selectAll(".fcCandleBody").data(aCandles);
+
+        candleBody.exit().remove();
+        candleBody
           .enter()
           .append("rect")
+          .classed("fcCandleBody", true);
+
+        plotArea
+          .selectAll(".fcCandleBody")
+          .data(aCandles)
           .attr(
             "x",
             e =>

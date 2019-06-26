@@ -5,12 +5,7 @@ sap.ui.define(["sap/ui/core/library"], function() {
     name: "openu.fc",
     dependencies: ["sap.ui.core", "sap.m"],
     interfaces: [],
-    controls: [
-      "openu.fc.CandlestickChart",
-      "openu.fc.Candle",
-      "openu.fc.Point",
-      "openu.fc.indicator.CCI"
-    ],
+    controls: ["openu.fc.CandlestickChart", "openu.fc.Candle"],
     elements: [],
     noLibraryCSS: true,
     version: "1.0.0"

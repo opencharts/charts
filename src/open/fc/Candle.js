@@ -8,9 +8,7 @@ sap.ui.define(["sap/ui/core/Control"], function(Control) {
         open: "float",
         high: "float",
         low: "float",
-        close: "float",
-        buy: "boolean",
-        sell: "boolean"
+        close: "float"
       }
     }
   });
